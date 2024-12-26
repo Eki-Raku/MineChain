@@ -1,5 +1,6 @@
 package com.raku.minechain.listener;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -16,8 +17,8 @@ public class ServerListener implements Listener {
      * 玩家进入服务器监听
      * @param event 进入服务器事件
      */
-    @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-
-    }
+//    @EventHandler
+//    public void onPlayerJoin(PlayerJoinEvent event) {
+//
+//    }
 }
