@@ -2,6 +2,7 @@ package com.raku.minechain;
 
 import com.raku.minechain.command.MainCommand;
 import com.raku.minechain.constant.CommonConstant;
+import com.raku.minechain.listener.PlayerListener;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -13,7 +14,7 @@ import java.util.Objects;
  * @Author Raku
  * @Date 2024/12/26
  */
-public final class MineChain extends JavaPlugin implements Listener {
+public final class MineChain extends JavaPlugin {
     /**
      * 常变量定义
      */
@@ -33,7 +34,7 @@ public final class MineChain extends JavaPlugin implements Listener {
         // 加载并更新配置文件
         this.saveDefaultConfig();
         // 注册所需组件
-        Bukkit.getPluginManager().registerEvents(this, this);
+        Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
         Objects.requireNonNull(this.getCommand("MineChain")).setExecutor(new MainCommand(this));
         Objects.requireNonNull(this.getCommand("MineChain")).setTabCompleter(new MainCommand(this));
         // 启动成功提示
