@@ -6,7 +6,6 @@ import com.raku.minechain.listener.PlayerListener;
 import com.raku.minechain.listener.ServerListener;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.Connection;
@@ -23,6 +22,7 @@ public final class MineChain extends JavaPlugin {
     /**
      * 常变量定义
      */
+    private static MineChain instance;
     private String maxActiveNum;
     private String database;
     private String dbUrl;
@@ -43,6 +43,7 @@ public final class MineChain extends JavaPlugin {
     @Override
     public void onEnable() {
         // 加载并更新配置文件
+        instance = this;
         this.saveDefaultConfig();
         this.loadConfig();
         // 注册所需组件
@@ -59,7 +60,15 @@ public final class MineChain extends JavaPlugin {
      */
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        instance = null;
+    }
+
+    /**
+     * 使用单例模式获取插件实例
+     * @return 实例
+     */
+    public static MineChain getInstance() {
+        return instance;
     }
 
     /**
@@ -72,7 +81,7 @@ public final class MineChain extends JavaPlugin {
         this.maxActiveNum = config.getString("max-active-num");
         assert this.maxActiveNum != null;
         if (this.maxActiveNum.length() >= 4 || Integer.parseInt(this.maxActiveNum) >= 200) {
-            this.getLogger().info(CommonConstant.PLUGIN_PREFIX + "最大连锁方块数超过200可能对服务器造成极大负担");
+            this.getLogger().severe(CommonConstant.PLUGIN_PREFIX + "最大连锁方块数超过200可能对服务器造成极大负担");
         }
         // 最大连锁方块数 - End
         // 数据库配置 - Begin
@@ -96,7 +105,7 @@ public final class MineChain extends JavaPlugin {
                     CommonConstant.PLUGIN_PREFIX + "数据库连接成功建立，且处于可用状态" :
                     CommonConstant.PLUGIN_PREFIX + "数据库连接成功建立，但是数据库目前处于不可用状态");
         } catch (SQLException ex) {
-            throw new RuntimeException(CommonConstant.PLUGIN_PREFIX + "数据库连接失败，原因是: " + ex.getMessage());
+            this.getLogger().severe(CommonConstant.PLUGIN_PREFIX + "数据库连接失败，原因是: " + ex.getMessage());
         }
     }
 }
