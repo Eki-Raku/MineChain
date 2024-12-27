@@ -8,13 +8,13 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
-import java.util.Arrays;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Objects;
 
 /**
  * 数据存储相关方法类
  * - 负责管理各种数据的获取、写入等操作
+ *
  * @Author Raku
  * @Date 2024/12/27
  */
@@ -22,26 +22,78 @@ public class StorageUtil {
     /**
      * 常量定义
      */
+    private static StorageUtil storageUtil;
     private MineChain instance;
     private Connection connection;
 
     /**
-     * 禁止无参构造
+     * 私有构造函数，防止外部直接实例化
      */
-    private StorageUtil() {
-        throw new RuntimeException("该类无法通过无参构造方法实例化");
+    private StorageUtil(Connection connection) {
+        this.instance = MineChain.getInstance();
+        this.connection = connection;
+        if (Objects.isNull(this.connection)) {
+            this.initialLocalStorage();
+        }
     }
 
     /**
-     * 有参构造函数，保证每次调用始终都有数据库可用
+     * 获取单例实例
+     *
+     * @param connection 数据库连接
+     * @return           本类实例
      */
-    public StorageUtil(Connection connection) {
-        instance = MineChain.getInstance();
-        this.connection = connection;
-        if (Objects.isNull(this.connection)) {
-            this.initialLocalStorage();;
+    public static synchronized StorageUtil get(Connection connection) {
+        if (storageUtil == null) {
+            storageUtil = new StorageUtil(connection);
         }
+        return storageUtil;
     }
+
+    /**
+     * 向存储介质中写入数据
+     *
+     * @param data 待写入的数据
+     * @param dest 写入的位置（数据库中即是Table，yml中即是Section）
+     * @return     是否成功
+     */
+    public <Data, Dest> boolean write(Data data, Dest dest) {
+        if (Objects.isNull(this.connection)) {
+            try {
+                FileConfiguration config = YamlConfiguration.loadConfiguration(new File(CommonConstant.STORAGE_FOLDER));
+                config.set(String.valueOf(dest), data);
+                return true;
+            } catch (Exception ex) {
+                instance.getLogger().severe("数据写入失败: " + ex.getMessage());
+            }
+        } else {
+            // todo 连接数据库时的写入操作
+        }
+        return false;
+    }
+
+    /**
+     * 从存储介质中查询数据
+     *
+     * @param tableName  表名
+     * @param conditions 查询条件
+     * @return           查询结果
+     */
+    public Object read(String tableName, ArrayList<String> conditions) {
+        if (Objects.isNull(this.connection)) {
+            try {
+                FileConfiguration config = YamlConfiguration.loadConfiguration(new File(CommonConstant.STORAGE_FOLDER));
+                return config.get(tableName);
+            } catch (Exception ex) {
+                instance.getLogger().severe("数据查询失败: " + ex.getMessage());
+            }
+        } else {
+            // todo 连接数据库时的读取操作
+        }
+        return null;
+    }
+
+    /* ============================================================================================================= */
 
     /**
      * 当数据库设置为空时，使用本地Yml文件作为数据存储工具
@@ -49,7 +101,7 @@ public class StorageUtil {
     private void initialLocalStorage() {
         File dataFolder = instance.getDataFolder();
         // 创建数据库文件夹
-        File databaseFolder = new File(dataFolder, "database");
+        File databaseFolder = new File(dataFolder, "data");
         if (!databaseFolder.exists() && databaseFolder.mkdir()) {
             instance.getLogger().info(CommonConstant.PLUGIN_PREFIX + "本地数据库文件夹已创建: " + databaseFolder.getAbsolutePath());
         }

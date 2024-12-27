@@ -1,4 +1,0 @@
-name: minechain
-version: '1.0-SNAPSHOT'
-main: com.raku.minechain.MineChain
-api-version: '1.21'

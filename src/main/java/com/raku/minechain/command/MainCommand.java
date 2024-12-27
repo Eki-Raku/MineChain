@@ -19,16 +19,7 @@ public class MainCommand implements CommandExecutor, TabCompleter {
     /**
      * 常变量定义
      */
-    private final MineChain plugin;
-
-    /**
-     * 构造函数
-     *
-     * @param plugin 插件实例
-     */
-    public MainCommand(MineChain plugin) {
-        this.plugin = plugin;
-    }
+    private static final MineChain INSTANCE = MineChain.getInstance();
 
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {

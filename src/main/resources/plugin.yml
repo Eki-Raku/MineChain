@@ -1,0 +1,15 @@
+name: MineChain
+version: '1.0-SNAPSHOT'
+main: com.raku.minechain.MineChain
+api-version: '1.21'
+authors: [Raku]
+
+commands:
+  minechain:
+    description: main command
+    aliases:
+      - "minechain"
+    permission: minechain.admin
+permission:
+  minechain.admin:
+    default: op

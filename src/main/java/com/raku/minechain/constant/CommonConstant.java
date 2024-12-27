@@ -5,6 +5,7 @@ import java.util.List;
 
 /**
  * 通用枚举类
+ *
  * @Author Raku
  * @Date 2024/12/26
  */
@@ -13,6 +14,10 @@ public class CommonConstant {
      * 插件前缀
      */
     public static final String PLUGIN_PREFIX = "§7[§a连锁挖矿§7] §f";
+    /**
+     * 本地存储文件夹名
+     */
+    public static final String STORAGE_FOLDER = "data";
     /**
      * 默认连锁方块
      */

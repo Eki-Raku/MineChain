@@ -11,7 +11,7 @@ max-active-num: 50
 # 数据库设置
 database:
   # 是否启用数据库
-  enabled: true
+  enabled: false
   # 数据库类型（MySQL MongoDB SQLite）
   type: MySQL
   # 连接属性
