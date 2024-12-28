@@ -6,7 +6,7 @@
 enabled: true
 
 # 最大连锁方块数
-max-active-num: 50
+max-active-num: 5
 
 # 数据库设置
 database:

@@ -2,6 +2,7 @@ package com.raku.minechain.utils;
 
 import com.raku.minechain.MineChain;
 import com.raku.minechain.constant.CommonConstant;
+import com.raku.minechain.constant.ConfigConstant;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -32,20 +33,16 @@ public class StorageUtil {
     private StorageUtil(Connection connection) {
         this.instance = MineChain.getInstance();
         this.connection = connection;
-        if (Objects.isNull(this.connection)) {
-            this.initialLocalStorage();
-        }
     }
 
     /**
      * 获取单例实例
      *
-     * @param connection 数据库连接
-     * @return           本类实例
+     * @return 本类实例
      */
-    public static synchronized StorageUtil get(Connection connection) {
+    public static synchronized StorageUtil getInstance() {
         if (storageUtil == null) {
-            storageUtil = new StorageUtil(connection);
+            storageUtil = new StorageUtil(MineChain.getConnection());
         }
         return storageUtil;
     }
@@ -60,7 +57,7 @@ public class StorageUtil {
     public <Data, Dest> boolean write(Data data, Dest dest) {
         if (Objects.isNull(this.connection)) {
             try {
-                FileConfiguration config = YamlConfiguration.loadConfiguration(new File(CommonConstant.STORAGE_FOLDER));
+                FileConfiguration config = YamlConfiguration.loadConfiguration(new File(ConfigConstant.CONFIG_STORAGE_FOLDER));
                 config.set(String.valueOf(dest), data);
                 return true;
             } catch (Exception ex) {
@@ -75,15 +72,17 @@ public class StorageUtil {
     /**
      * 从存储介质中查询数据
      *
-     * @param tableName  表名
-     * @param conditions 查询条件
-     * @return           查询结果
+     * @param tableName 表名
+     * @param fieldName 列名
+     * @return          查询结果
      */
-    public Object read(String tableName, ArrayList<String> conditions) {
+    public Object read(String tableName, String fieldName) {
         if (Objects.isNull(this.connection)) {
             try {
-                FileConfiguration config = YamlConfiguration.loadConfiguration(new File(CommonConstant.STORAGE_FOLDER));
-                return config.get(tableName);
+                File dataFile = new File(instance.getDataFolder(), ConfigConstant.CONFIG_STORAGE_FOLDER
+                        .concat("\\").concat(tableName).concat(CommonConstant.COMMON_FILE_SUFFIX));
+                FileConfiguration config = YamlConfiguration.loadConfiguration(dataFile);
+                return config.get(fieldName);
             } catch (Exception ex) {
                 instance.getLogger().severe("数据查询失败: " + ex.getMessage());
             }
@@ -95,51 +94,4 @@ public class StorageUtil {
 
     /* ============================================================================================================= */
 
-    /**
-     * 当数据库设置为空时，使用本地Yml文件作为数据存储工具
-     */
-    private void initialLocalStorage() {
-        File dataFolder = instance.getDataFolder();
-        // 创建数据库文件夹
-        File databaseFolder = new File(dataFolder, "data");
-        if (!databaseFolder.exists() && databaseFolder.mkdir()) {
-            instance.getLogger().info(CommonConstant.PLUGIN_PREFIX + "本地数据库文件夹已创建: " + databaseFolder.getAbsolutePath());
-        }
-        // 初始化文件创建
-        File blocks = new File(databaseFolder, "blocks.yml");
-        File tools = new File(databaseFolder, "tools.yml");
-        try {
-            boolean b = blocks.createNewFile();
-            if (b) {
-                FileConfiguration config = YamlConfiguration.loadConfiguration(blocks);
-                this.fillDefaultBlocks(config);
-                config.save(blocks);
-            }
-            boolean t = tools.createNewFile();
-            if (t) {
-                FileConfiguration config = YamlConfiguration.loadConfiguration(tools);
-                this.fillDefaultTools(config);
-                config.save(tools);
-            }
-        } catch (IOException ex) {
-            instance.getLogger().severe(CommonConstant.PLUGIN_PREFIX + "创建数据文件时发生错误: " + ex.getMessage());
-        }
-        instance.getLogger().info(CommonConstant.PLUGIN_PREFIX + "本地存储初始化完成");
-    }
-
-    /**
-     * 当默认文件不存在时，需要用默认数据填充创建的空文件
-     * - 填充默认允许的连锁方块
-     */
-    private void fillDefaultBlocks(FileConfiguration config) {
-        config.set("blocks", CommonConstant.DEFAULT_BLOCK);
-    }
-
-    /**
-     * 当默认文件不存在时，需要用默认数据填充创建的空文件
-     * - 填充默认允许的连锁工具
-     */
-    private void fillDefaultTools(FileConfiguration config) {
-        config.set("tools", CommonConstant.DEFAULT_TOOLS);
-    }
 }

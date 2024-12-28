@@ -13,15 +13,15 @@ public class CommonConstant {
     /**
      * 插件前缀
      */
-    public static final String PLUGIN_PREFIX = "§7[§a连锁挖矿§7] §f";
+    public static final String COMMON_PLUGIN_PREFIX = "§7[§a连锁挖矿§7] §f";
     /**
-     * 本地存储文件夹名
+     * 本地储存 - 文件后缀
      */
-    public static final String STORAGE_FOLDER = "data";
+    public static final String COMMON_FILE_SUFFIX = ".yml";
     /**
      * 默认连锁方块
      */
-    public static final List<String> DEFAULT_BLOCK = Arrays.asList(
+    public static final List<String> COMMON_DEFAULT_BLOCK = Arrays.asList(
             "OAK_LOG", "SPRUCE_LOG", "BIRCH_LOG", "JUNGLE_LOG", "ACACIA_LOG",
             "DARK_OAK_LOG", "MANGROVE_LOG", "CHERRY_LOG",
             "COAL_ORE", "DEEPSLATE_COAL_ORE", "IRON_ORE", "DEEPSLATE_IRON_ORE",
@@ -34,11 +34,15 @@ public class CommonConstant {
     /**
      * 默认连锁工具
      */
-    public static final List<String> DEFAULT_TOOLS = Arrays.asList(
+    public static final List<String> COMMON_DEFAULT_TOOLS = Arrays.asList(
             "WOODEN_AXE", "WOODEN_PICKAXE",
             "STONE_AXE", "STONE_PICKAXE",
             "GOLDEN_AXE", "GOLDEN_PICKAXE",
             "IRON_AXE", "IRON_PICKAXE",
             "DIAMOND_AXE", "DIAMOND_PICKAXE"
     );
+    /**
+     * 广度优先搜索用到的六方位数组
+     */
+    public static final int[][] ALL_DIRECTION = {{1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0}, {0, 0, 1}, {0, 0, -1}};
 }
