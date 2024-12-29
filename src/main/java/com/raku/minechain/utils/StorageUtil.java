@@ -24,8 +24,8 @@ public class StorageUtil {
      * 常量定义
      */
     private static StorageUtil storageUtil;
-    private MineChain instance;
-    private Connection connection;
+    private final MineChain instance;
+    private final Connection connection;
 
     /**
      * 私有构造函数，防止外部直接实例化

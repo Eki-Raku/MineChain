@@ -8,7 +8,7 @@ enabled: true
 # 最大连锁方块数
 max-active-num: 5
 
-# 数据库设置
+# 数据库设置【数据库尚未实装，请勿启用】
 database:
   # 是否启用数据库
   enabled: false

@@ -29,11 +29,6 @@ public final class MineChain extends JavaPlugin {
      * 常变量定义
      */
     private static MineChain instance;
-    private String maxActiveNum;
-    private String database;
-    private String dbUrl;
-    private String dbUsername;
-    private String dbPassWord;
     private static Connection connection;
 
     /**
@@ -109,20 +104,26 @@ public final class MineChain extends JavaPlugin {
     private void loadConfig() {
         this.reloadConfig();
         FileConfiguration config = this.getConfig();
+        // 是否启用插件 - Begin
+        boolean isEnable = config.getBoolean("enabled");
+        if (!isEnable) {
+            Bukkit.getPluginManager().disablePlugin(this);
+            getLogger().info("插件未启用");
+        }
+        // 是否启用插件 - End
         // 最大连锁方块数 - Begin
-        this.maxActiveNum = config.getString("max-active-num");
-        assert this.maxActiveNum != null;
-        if (this.maxActiveNum.length() >= 4 || Integer.parseInt(this.maxActiveNum) >= 200) {
-            getLogger().severe("最大连锁方块数超过200可能对服务器造成极大负担");
+        int maxActiveNum = config.getInt("max-active-num");
+        if (maxActiveNum >= 200) {
+            getLogger().warning("最大连锁方块数超过200可能对服务器造成极大负担");
         }
         // 最大连锁方块数 - End
         // 数据库配置 - Begin
-        this.database = config.getBoolean("database.enabled") ? config.getString("database.type") : null;
-        if (Objects.nonNull(this.database)) {
-            this.dbUrl = config.getString("database.url");
-            this.dbUsername = config.getString("database.username");
-            this.dbPassWord = config.getString("database.password");
-            this.loadDatabase();
+        String database = config.getBoolean("database.enabled") ? config.getString("database.type") : null;
+        if (Objects.nonNull(database)) {
+            String ip = config.getString("database.url");
+            String username = config.getString("database.username");
+            String password = config.getString("database.password");
+            this.loadDatabase(ip, username, password);
         } else {
            this.initialLocalStorage();
         }
@@ -130,10 +131,11 @@ public final class MineChain extends JavaPlugin {
     }
 
     /**
-     * 测试数据库连接
+     * 连接数据库
      */
-    private void loadDatabase() {
-        try (Connection connection = DriverManager.getConnection(this.dbUrl, this.dbUsername, this.dbPassWord)) {
+    private void loadDatabase(String ip, String username, String password) {
+        try {
+            connection = DriverManager.getConnection(ip, username, password);
             boolean valid = connection.isValid(3);
             getLogger().info(valid ?
                     "数据库连接成功建立，且处于可用状态" :
